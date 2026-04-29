@@ -6,207 +6,407 @@ TravelMemory is a full-stack MERN application that allows users to store and man
 
 
 🎯 Objectives
+
 •	Deploy backend (Node.js + Express) on EC2
+
 •	Deploy frontend (React) on EC2
+
 •	Enable communication between frontend and backend
+
 •	Implement load balancing using AWS ALB
+
 •	Configure reverse proxy using Nginx
+
 •	Connect a custom domain using Cloudflare
+
 •	Ensure scalability and high availability
 
 
 Tech Stack
+
 🔹 Frontend
+
 •	React — Component-based UI development 
+
 •	Axios — API communication with backend 
+
 •	CSS — Styling and layout 
+
 ________________________________________
+
 🔹 Backend
+
 •	Node.js — Server-side execution 
+
 •	Express.js — REST API handling 
+
 •	MongoDB (Atlas) — Cloud database storage 
+
 •	Mongoose — Schema modeling and queries 
+
 ________________________________________
+
 🔹 DevOps & Infrastructure
+
 •	Amazon EC2 — Hosting frontend and backend instances 
+
 •	Application Load Balancer — Traffic distribution across backend instances 
+
 •	Nginx — Reverse proxy (backend) + static hosting (frontend) 
+
 •	PM2 — Process management and uptime 
+
 •	Cloudflare — DNS management, CDN, SSL 
+
 ________________________________________
+
 🔹 Architecture Highlights 
+
 •	Frontend served via Nginx on EC2 
+
 •	Backend instances behind ALB 
+
 •	API routing through /api endpoints 
+
 •	MongoDB Atlas used as managed database 
+
 •	Horizontal scaling using multiple backend EC2 instances
 
 
+
+
+
 ________________________________________
+
 🚀 Deployment Steps
+
 ________________________________________
+
 1.	Creating EC2
+
 Use:
+
 •	AMI: Ubuntu Server 24.04 LTS
+
 •	Instance type: t2.micro (free tier) 
+
 •	Storage: 20GB enough 
+
 •	Security group (IMPORTANT): 
+
 Open:
+
 •	22 → SSH 
+
 •	80 → HTTP 
+
 •	3000 → backend
+
 ________________________________________
+
 2.	Installing dependencies
+
 2.1 Update System
+
 sudo apt update && sudo apt upgrade -y
+
 2.2 Install Node.js (v18)
+
 curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+
 sudo apt install -y nodejs
+
 2.3 Install Nginx
+
 sudo apt install nginx -y
+
 sudo systemctl start nginx
+
 sudo systemctl enable nginx
+
 2.4 Install Process Manager (PM2)
+
 Sudo npm install -g pm2
+
 ________________________________________
+
+
 
 3 Clone Repository
+
 git clone https://github.com/UnpredictablePrashant/TravelMemory.git
+
 ________________________________________
+
+
 
 4. Backend Setup (EC2 Instances)
+
 4.1 cd TravelMemory/backend
+
 npm install
+
 4.2 Configure Environment Variables
+
 Create .env file:
+
 PORT=3000
+
 MONGO_URI=<your_mongodb_connection_string>
+
 4.3 Run Backend
+
 pm2 start index.js
+
 pm2 save
+
 Test:
+
 http://<EC2_PUBLIC_IP>:3000
+
 ________________________________________
+
 5. Configure Nginx (Backend Reverse Proxy)
+
 Edit:
+
 sudo nano /etc/nginx/sites-available/default
+
 server {
+
     listen 80;
 
+
+
     location / {
+    
         proxy_pass http://localhost:3000;
+        
         proxy_http_version 1.1;
 
+
+
         proxy_set_header Upgrade $http_upgrade;
+        
         proxy_set_header Connection 'upgrade';
+        
         proxy_set_header Host $host;
+        
         proxy_cache_bypass $http_upgrade;
     }
+    
 }
+
+
 Restart:
+
 sudo systemctl restart nginx
+
 Test:
+
 http://<EC2_PUBLIC_IP>
+
 ________________________________________
+
+
 
 6. Frontend Setup (EC2)
+
 6.1 Install & Build
+
 cd TravelMemory/frontend
+
 npm install
+
 npm run build
+
 6.2 Configure API URL
+
 Edit:
+
 src/url.js
+
 export const baseURL = "http://<LOAD_BALANCER_DNS>/api";
+
 6.3 Serve with Nginx
+
 sudo rm -rf /var/www/html/*
+
 sudo cp -r build/* /var/www/html/
+
 sudo systemctl restart nginx
+
 ________________________________________
+
+
 
 7. Creating additional EC2 for Load Balancer.
+
 7.1 Creating AMI using the configured EC2.
+
 7.2 Creating multiple EC2 using the same AMI.
+
 ________________________________________
+
 8. Load Balancer Setup (AWS ALB)
+
 8.1 Create Target Group
+
 •	Type: Instances
+
 •	Protocol: HTTP
+
 •	Port: 80
+
 Add all backend EC2 instances.
+
 Health check:
+
 Path: /
+
 8.2 Create ALB
+
 •	Scheme: Internet-facing
+
 •	Listener: HTTP (port 80)
+
 •	Attach target group
+
 Test:
+
 http://<LOAD_BALANCER_DNS>
+
 ________________________________________
+
+
 
 9. Scaling (Auto Scaling Group)
+
+
 •	Create AMI from backend EC2
+
 •	Create Launch Template
+
 •	Create Auto Scaling Group
+
 •	Attach to ALB target group
+
 Configuration:
+
 •	Min: 2
+
 •	Desired: 2
+
 •	Max: 4
+
 ________________________________________
 
+
+
+
 10. Domain Setup (Cloudflare)
+
 10.1 Add Domain
+
 •	Add domain to Cloudflare
+
 •	Update nameservers
+
 10.2 DNS Configuration
+
 CNAME:
+
 Name: www
+
 Target: <LOAD_BALANCER_DNS>
+
 A Record:
+
 Name: @
+
 Value: <FRONTEND_EC2_PUBLIC_IP>
+
 Enable proxy (orange cloud).
+
 ________________________________________
+
 For pushing the code to a new repository
+
 •	Create a new repository
+
 •	Check the current remote
+
 git remote -v
+
 •	Remove the existing remote 
+
 git remote remove origin
+
 •	Add to new repository
+
 git remote add origin https://github.com/<your-username>/<repo-name>.git
+
 •	Verify 
+
 Git remote -v
+
 •	Push your code
+
 git push -u origin main
+
 It will ask for username and password.
+
 This method is not working anymore.
+
 Check developers tools in your git.
+
 Go to GitHub → Settings
+
 Navigate to:
+
 Developer Settings → Personal access tokens → Tokens (classic)
+
 Click Generate new token (classic)
+
 Select:
+
 ✅ repo (full control)
+
 Generate and copy the token (you won’t see it again)
+
 Use this instead of user id and password
+
 ________________________________________
+
 ________________________________________
+
 ✅ Validation Checklist
+
 •	Backend accessible via ALB
+
 •	Frontend loads successfully
+
 •	API calls return valid JSON
+
 •	Load balancing distributes traffic
+
 •	Domain resolves correctly
+
 •	SSL enabled via Cloudflare
+
 ________________________________________
+
+
 
 Deployment Architecture Diagram
 
-<img width="1302" height="757" alt="image" src="https://github.com/user-attachments/assets/2fd04d2c-9843-46c9-b401-82ca96cad58b" />
+
+
+<img width="1302" height="757" alt="image" src="https://github.com/user-attachments/assets/2fd04d2c-9843-46c9-b401-
+82ca96cad58b" />
 
 ________________________________________
+
 
 Required Screen Shots
 
