@@ -1,6 +1,9 @@
 TravelMemory Deployment (MERN Stack on AWS)
+
+
 📌 Introduction
 TravelMemory is a full-stack MERN application that allows users to store and manage travel experiences. This project demonstrates deployment of a scalable MERN application using AWS infrastructure, reverse proxy configuration, and domain integration.
+
 
 🎯 Objectives
 •	Deploy backend (Node.js + Express) on EC2
@@ -10,6 +13,8 @@ TravelMemory is a full-stack MERN application that allows users to store and man
 •	Configure reverse proxy using Nginx
 •	Connect a custom domain using Cloudflare
 •	Ensure scalability and high availability
+
+
 Tech Stack
 🔹 Frontend
 •	React — Component-based UI development 
@@ -35,6 +40,8 @@ ________________________________________
 •	API routing through /api endpoints 
 •	MongoDB Atlas used as managed database 
 •	Horizontal scaling using multiple backend EC2 instances
+
+
 ________________________________________
 🚀 Deployment Steps
 ________________________________________
