@@ -173,6 +173,7 @@ Edit:
 sudo nano /etc/nginx/sites-available/default
 
 server {
+
     listen 80;
     location / {
         proxy_pass http://localhost:3000;
@@ -182,6 +183,7 @@ server {
         proxy_set_header Host $host;  
         proxy_cache_bypass $http_upgrade;
     }
+
 }
 
 
