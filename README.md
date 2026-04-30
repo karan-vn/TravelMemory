@@ -388,11 +388,8 @@ ________________________________________
 
 
 Deployment Architecture Diagram
+<img width="1302" height="757" alt="Screenshot 2026-04-29 093355" src="https://github.com/user-attachments/assets/497740a6-07db-479a-b46d-540af3474b67" />
 
-
-
-<img width="1302" height="757" alt="image" src="https://github.com/user-attachments/assets/2fd04d2c-9843-46c9-b401-
-82ca96cad58b" />
 
 ________________________________________
 
